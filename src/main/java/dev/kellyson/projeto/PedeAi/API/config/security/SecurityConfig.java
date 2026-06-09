@@ -1,4 +1,4 @@
-package dev.kellyson.projeto.PedeAi.API.config;
+package dev.kellyson.projeto.PedeAi.API.config.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
