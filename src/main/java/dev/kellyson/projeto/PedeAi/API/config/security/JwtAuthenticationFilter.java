@@ -1,4 +1,4 @@
-package dev.kellyson.projeto.PedeAi.API.config;
+package dev.kellyson.projeto.PedeAi.API.config.security;
 
 import dev.kellyson.projeto.PedeAi.API.auth.service.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
@@ -30,12 +30,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String authorizationHeader = request.getHeader("Authorization");
 
-        String token = authorizationHeader.substring(7);
-
-        if (StringUtils.hasText(authorizationHeader) || !authorizationHeader.startsWith("Bearer ")) {
+        if (!StringUtils.hasText(authorizationHeader) || !authorizationHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request,response);
             return;
         }
+
+        String token = authorizationHeader.substring(7);
 
         if (tokenProvider.isTokenValid(token)) {
             String username = tokenProvider.extractUsername(token);
@@ -48,6 +48,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         }
 
+        filterChain.doFilter(request,response);
     }
 
 }
