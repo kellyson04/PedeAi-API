@@ -2,9 +2,8 @@ package dev.kellyson.projeto.PedeAi.API.auth.service;
 
 import dev.kellyson.projeto.PedeAi.API.config.viacep.dto.ViaCepResponseDTO;
 import dev.kellyson.projeto.PedeAi.API.config.viacep.service.ViaCepService;
-import dev.kellyson.projeto.PedeAi.API.user.dto.LoginRequestDTO;
-import dev.kellyson.projeto.PedeAi.API.user.dto.RegisterRequestDTO;
-import dev.kellyson.projeto.PedeAi.API.user.dto.UserResponseDTO;
+import dev.kellyson.projeto.PedeAi.API.auth.dto.RegisterRequestDTO;
+import dev.kellyson.projeto.PedeAi.API.auth.dto.UserResponseDTO;
 import dev.kellyson.projeto.PedeAi.API.user.entity.User;
 import dev.kellyson.projeto.PedeAi.API.user.mapper.UserMapper;
 import dev.kellyson.projeto.PedeAi.API.user.repository.UserRepository;

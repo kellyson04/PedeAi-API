@@ -2,8 +2,8 @@ package dev.kellyson.projeto.PedeAi.API.auth.controller;
 
 
 import dev.kellyson.projeto.PedeAi.API.auth.service.AuthService;
-import dev.kellyson.projeto.PedeAi.API.user.dto.RegisterRequestDTO;
-import dev.kellyson.projeto.PedeAi.API.user.dto.UserResponseDTO;
+import dev.kellyson.projeto.PedeAi.API.auth.dto.RegisterRequestDTO;
+import dev.kellyson.projeto.PedeAi.API.auth.dto.UserResponseDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
