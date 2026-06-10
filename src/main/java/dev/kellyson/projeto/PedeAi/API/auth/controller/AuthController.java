@@ -1,6 +1,7 @@
 package dev.kellyson.projeto.PedeAi.API.auth.controller;
 
 
+import dev.kellyson.projeto.PedeAi.API.auth.dto.LoginRequestDTO;
 import dev.kellyson.projeto.PedeAi.API.auth.service.AuthService;
 import dev.kellyson.projeto.PedeAi.API.auth.dto.RegisterRequestDTO;
 import dev.kellyson.projeto.PedeAi.API.auth.dto.UserResponseDTO;
@@ -28,4 +29,9 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody @Valid LoginRequestDTO request) {
+
+        return ResponseEntity.status(HttpStatus.OK).body(authService.login(request));
+    }
 }
