@@ -3,6 +3,7 @@ package dev.kellyson.projeto.PedeAi.API.config.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -28,6 +29,9 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/restaurants/register").hasAnyRole("ADMIN","RESTAURANT_OWNER")
+                        .requestMatchers(HttpMethod.GET, "/restaurants/me").hasAnyRole("ADMIN","RESTAURANT_OWNER")
+                        .requestMatchers(HttpMethod.PATCH, "/restaurants/{restaurantId}/close").hasAnyRole("ADMIN","RESTAURANT_OWNER")
                         .anyRequest().authenticated()
                 ).addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
