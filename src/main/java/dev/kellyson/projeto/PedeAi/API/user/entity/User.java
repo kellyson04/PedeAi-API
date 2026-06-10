@@ -3,6 +3,7 @@ package dev.kellyson.projeto.PedeAi.API.user.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
@@ -52,17 +53,17 @@ public class User implements UserDetails {
     public void prePersist() {
         this.isActive = true;
         this.createdAt = LocalDateTime.now();
-        this.role = UserRole.USER;
+        this.role = UserRole.CUSTOMER;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return List.of(new SimpleGrantedAuthority("ROLE_"+ this.role));
     }
 
     @Override
     public String getUsername() {
-        return "";
+        return this.email;
     }
 
     @Override
