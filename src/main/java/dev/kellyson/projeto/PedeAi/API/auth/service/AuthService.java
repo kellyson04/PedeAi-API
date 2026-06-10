@@ -1,14 +1,21 @@
 package dev.kellyson.projeto.PedeAi.API.auth.service;
 
+import dev.kellyson.projeto.PedeAi.API.auth.dto.LoginRequestDTO;
+import dev.kellyson.projeto.PedeAi.API.config.security.TokenProvider;
 import dev.kellyson.projeto.PedeAi.API.config.viacep.dto.ViaCepResponseDTO;
 import dev.kellyson.projeto.PedeAi.API.config.viacep.service.ViaCepService;
 import dev.kellyson.projeto.PedeAi.API.auth.dto.RegisterRequestDTO;
 import dev.kellyson.projeto.PedeAi.API.auth.dto.UserResponseDTO;
+import dev.kellyson.projeto.PedeAi.API.exception.BadRequestException;
+import dev.kellyson.projeto.PedeAi.API.exception.ConflictException;
 import dev.kellyson.projeto.PedeAi.API.user.entity.User;
 import dev.kellyson.projeto.PedeAi.API.user.mapper.UserMapper;
 import dev.kellyson.projeto.PedeAi.API.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,11 +26,12 @@ public class AuthService {
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
+    private final TokenProvider tokenProvider;
     private final ViaCepService viaCepService;
 
     public UserResponseDTO register(RegisterRequestDTO registerRequestDTO) {
         if (userRepository.existsByEmail(registerRequestDTO.email())) {
-            throw new RuntimeException("Email ja em uso");
+            throw new ConflictException("Email ja em uso");
         }
 
         ViaCepResponseDTO adress = viaCepService.findAdressByCep(registerRequestDTO.cep());
@@ -41,5 +49,20 @@ public class AuthService {
         return UserMapper.toResponse(user);
     }
 
+    public String login(LoginRequestDTO loginRequestDTO) {
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(loginRequestDTO.email(),loginRequestDTO.password());
+
+        try{
+            Authentication userAuthenticated = authenticationManager.authenticate(authenticationToken);
+
+            String token = tokenProvider.generateToken(userAuthenticated);
+
+            return token;
+
+        } catch (BadCredentialsException e) {
+            throw new BadRequestException("credenciais invalidas");
+        }
+    }
 
 }
