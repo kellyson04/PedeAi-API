@@ -32,7 +32,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/restaurants/register").hasAnyRole("ADMIN","RESTAURANT_OWNER")
                         .requestMatchers(HttpMethod.GET, "/restaurants/me").hasAnyRole("ADMIN","RESTAURANT_OWNER")
                         .requestMatchers(HttpMethod.PATCH, "/restaurants/{restaurantId}/close").hasAnyRole("ADMIN","RESTAURANT_OWNER")
-                        .requestMatchers(HttpMethod.POST, "/restaurants/{restaurantId}/products").hasAnyRole("ADMIN","RESTAURANT_OWNER")
+                        .requestMatchers(HttpMethod.POST, "/products/{restaurantId}/register").hasAnyRole("ADMIN","RESTAURANT_OWNER")
                         .anyRequest().authenticated()
                 ).addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
