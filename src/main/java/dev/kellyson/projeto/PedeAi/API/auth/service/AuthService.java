@@ -1,11 +1,13 @@
 package dev.kellyson.projeto.PedeAi.API.auth.service;
 
+import dev.kellyson.projeto.PedeAi.API.address.entity.Address;
+import dev.kellyson.projeto.PedeAi.API.address.repository.AddressRepository;
 import dev.kellyson.projeto.PedeAi.API.auth.dto.LoginRequestDTO;
 import dev.kellyson.projeto.PedeAi.API.config.security.TokenProvider;
-import dev.kellyson.projeto.PedeAi.API.config.viacep.dto.ViaCepResponseDTO;
-import dev.kellyson.projeto.PedeAi.API.config.viacep.service.ViaCepService;
 import dev.kellyson.projeto.PedeAi.API.auth.dto.RegisterRequestDTO;
 import dev.kellyson.projeto.PedeAi.API.auth.dto.UserResponseDTO;
+import dev.kellyson.projeto.PedeAi.API.config.viacep.dto.ViaCepResponseDTO;
+import dev.kellyson.projeto.PedeAi.API.config.viacep.service.ViaCepService;
 import dev.kellyson.projeto.PedeAi.API.exception.BadRequestException;
 import dev.kellyson.projeto.PedeAi.API.exception.ConflictException;
 import dev.kellyson.projeto.PedeAi.API.user.entity.User;
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final AddressRepository addressRepository;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
@@ -34,17 +37,28 @@ public class AuthService {
             throw new ConflictException("Email ja em uso");
         }
 
-        ViaCepResponseDTO adress = viaCepService.findAdressByCep(registerRequestDTO.cep());
+        ViaCepResponseDTO addressData = viaCepService.findAdressByCep(registerRequestDTO.cep());
 
         User user = User.builder()
                 .name(registerRequestDTO.name())
                 .email(registerRequestDTO.email())
-                .uf(adress.uf())
-                .city(adress.localidade())
                 .password(passwordEncoder.encode(registerRequestDTO.password()))
                 .build();
 
         userRepository.save(user);
+
+        Address address = Address.builder()
+                .user(user)
+                .street(addressData.logradouro())
+                .number(registerRequestDTO.number())
+                .neighborhood(addressData.bairro())
+                .city(addressData.localidade())
+                .state(addressData.uf())
+                .zipCode(addressData.cep())
+                .complement(registerRequestDTO.complement())
+                .build();
+
+        addressRepository.save(address);
 
         return UserMapper.toResponse(user);
     }
