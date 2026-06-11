@@ -21,6 +21,13 @@ public record RegisterRequestDTO(
 
         @NotBlank
         @Pattern(regexp = "^[0-9]{8}$")
-        String cep
+        String cep,
+
+        @NotBlank
+        @Size(max = 20)
+        String number,
+
+        @Size(max = 100)
+        String complement
 ) {
 }
