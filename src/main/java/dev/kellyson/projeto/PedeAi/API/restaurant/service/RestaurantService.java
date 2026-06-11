@@ -1,6 +1,7 @@
 package dev.kellyson.projeto.PedeAi.API.restaurant.service;
 
 import dev.kellyson.projeto.PedeAi.API.exception.ConflictException;
+import dev.kellyson.projeto.PedeAi.API.exception.RestaurantNotFoundException;
 import dev.kellyson.projeto.PedeAi.API.restaurant.dto.MyRestaurantResponseDTO;
 import dev.kellyson.projeto.PedeAi.API.restaurant.dto.RegisterRestaurantResponseDTO;
 import dev.kellyson.projeto.PedeAi.API.restaurant.dto.RestaurantRequestDTO;
@@ -47,7 +48,8 @@ public class RestaurantService {
     }
 
     public String closeRestaurant(Long restaurantId,Authentication authentication) {
-        Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow(() -> new RuntimeException("Esse restaurante não existe"));
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new RestaurantNotFoundException("Esse restaurante nao existe"));
 
         User owner = (User) authentication.getPrincipal();
 
