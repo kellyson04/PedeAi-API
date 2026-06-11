@@ -1,6 +1,7 @@
 package dev.kellyson.projeto.PedeAi.API.config.viacep.service;
 
 import dev.kellyson.projeto.PedeAi.API.config.viacep.dto.ViaCepResponseDTO;
+import dev.kellyson.projeto.PedeAi.API.exception.ZipCodeNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
@@ -19,7 +20,7 @@ public class ViaCepService {
                 .body(ViaCepResponseDTO.class);
 
         if (response == null || Boolean.TRUE.equals(response.erro())) {
-            throw new RuntimeException("Cep não encontrado");
+            throw new ZipCodeNotFoundException("Cep nao encontrado");
         }
 
         return response;
