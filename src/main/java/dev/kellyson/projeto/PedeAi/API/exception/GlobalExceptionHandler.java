@@ -29,4 +29,19 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
+
+    @ExceptionHandler({
+            RestaurantNotFoundException.class,
+            CategoryNotFoundException.class,
+            ZipCodeNotFoundException.class
+    })
+    public ResponseEntity<ErrorResponse> handleNotFound(RuntimeException e) {
+        ErrorResponse error = ErrorResponse.builder()
+                .status(404)
+                .error("NOT_FOUND")
+                .message(e.getMessage())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
 }
