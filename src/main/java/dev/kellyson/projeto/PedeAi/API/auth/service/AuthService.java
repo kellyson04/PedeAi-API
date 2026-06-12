@@ -16,6 +16,7 @@ import dev.kellyson.projeto.PedeAi.API.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,6 +33,9 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final ViaCepService viaCepService;
+
+    private static final int MAX_FAILED_ATTEMPTS = 5;
+    private static final int LOCK_TIME_MINUTES = 30;
 
     @Transactional
     public UserResponseDTO register(RegisterRequestDTO registerRequestDTO) {
@@ -72,11 +76,39 @@ public class AuthService {
         try{
             Authentication userAuthenticated = authenticationManager.authenticate(authenticationToken);
 
+            User user = (User) userAuthenticated.getPrincipal();
+
+            user.setFailedLoginAttempts(0);
+            user.setLockedUntil(null);
+            userRepository.save(user);
+
             String token = tokenProvider.generateToken(userAuthenticated);
 
             return token;
 
-        } catch (BadCredentialsException e) {
+        } catch (LockedException e) {
+            throw new BadRequestException
+                    ("Este usuario foi bloqueado por tentativas invalidas. Tente novamente em " + LOCK_TIME_MINUTES + " minutos.");
+        }
+        catch (BadCredentialsException e) {
+            User user = userRepository.findByEmail(loginRequestDTO.email())
+                    .orElse(null);
+
+            if (user != null) {
+                int attempts = user.getFailedLoginAttempts() + 1;
+                user.setFailedLoginAttempts(attempts);
+
+                if (attempts < MAX_FAILED_ATTEMPTS) {
+                    userRepository.save(user);
+                    throw new BadRequestException("credenciais invalidas.");
+                }
+
+                user.setLockedUntil(java.time.LocalDateTime.now().plusMinutes(LOCK_TIME_MINUTES));
+                userRepository.save(user);
+
+                throw new BadRequestException
+                        ("Usuario bloqueado por tentativas invalidas. Tente novamente em " + LOCK_TIME_MINUTES + " minutos.");
+            }
             throw new BadRequestException("credenciais invalidas");
         }
     }
