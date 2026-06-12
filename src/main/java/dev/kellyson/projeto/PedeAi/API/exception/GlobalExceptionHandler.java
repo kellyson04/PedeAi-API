@@ -33,7 +33,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             RestaurantNotFoundException.class,
             CategoryNotFoundException.class,
-            ZipCodeNotFoundException.class
+            ZipCodeNotFoundException.class,
+            AddressNotFoundException.class
     })
     public ResponseEntity<ErrorResponse> handleNotFound(RuntimeException e) {
         ErrorResponse error = ErrorResponse.builder()
