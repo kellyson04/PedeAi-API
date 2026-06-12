@@ -16,6 +16,7 @@ import dev.kellyson.projeto.PedeAi.API.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +26,7 @@ public class ProductService {
     private final RestaurantRepository restaurantRepository;
     private final CategoryRepository categoryRepository;
 
+    @Transactional
     public ProductResponseDTO registerProduct(Long restaurantId,
                                               ProductRequestDTO productRequestDTO,
                                               Authentication authentication) {
