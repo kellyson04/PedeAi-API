@@ -1,5 +1,6 @@
 package dev.kellyson.projeto.PedeAi.API.restaurant.controller;
 
+import dev.kellyson.projeto.PedeAi.API.product.dto.ProductResponseDTO;
 import dev.kellyson.projeto.PedeAi.API.restaurant.dto.MyRestaurantResponseDTO;
 import dev.kellyson.projeto.PedeAi.API.restaurant.dto.RegisterRestaurantResponseDTO;
 import dev.kellyson.projeto.PedeAi.API.restaurant.dto.RestaurantRequestDTO;
@@ -39,5 +40,11 @@ public class RestaurantController {
         restaurantService.closeRestaurant(restaurantId,authentication);
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{restaurantId}/menu")
+    public ResponseEntity<List<ProductResponseDTO>> showMenu(@PathVariable Long restaurantId) {
+
+        return ResponseEntity.status(HttpStatus.OK).body(restaurantService.showMenu(restaurantId));
     }
 }
