@@ -29,6 +29,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/restaurants/{restaurantId}/menu").permitAll()
                         .requestMatchers(HttpMethod.POST,"/restaurants/register").hasAnyRole("ADMIN","RESTAURANT_OWNER")
                         .requestMatchers(HttpMethod.GET, "/restaurants/me").hasAnyRole("ADMIN","RESTAURANT_OWNER")
                         .requestMatchers(HttpMethod.PATCH, "/restaurants/{restaurantId}/close").hasAnyRole("ADMIN","RESTAURANT_OWNER")
