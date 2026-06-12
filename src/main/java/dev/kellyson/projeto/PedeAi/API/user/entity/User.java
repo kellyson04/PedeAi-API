@@ -40,14 +40,22 @@ public class User implements UserDetails {
     @Column(name = "is_active", nullable = false)
     private Boolean isActive;
 
+    @Column(name = "failed_login_attempts", nullable = false)
+    private Integer failedLoginAttempts;
+
+    @Column(name = "locked_until")
+    private LocalDateTime lockedUntil;
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
 
     @PrePersist
     public void prePersist() {
         this.isActive = true;
         this.createdAt = LocalDateTime.now();
         this.role = UserRole.CUSTOMER;
+        this.failedLoginAttempts = 0;
     }
 
     @Override
@@ -67,7 +75,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return UserDetails.super.isAccountNonLocked();
+        return this.lockedUntil == null || this.lockedUntil.isBefore(LocalDateTime.now());
     }
 
     @Override
