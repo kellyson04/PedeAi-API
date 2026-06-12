@@ -2,6 +2,9 @@ package dev.kellyson.projeto.PedeAi.API.restaurant.service;
 
 import dev.kellyson.projeto.PedeAi.API.exception.ConflictException;
 import dev.kellyson.projeto.PedeAi.API.exception.RestaurantNotFoundException;
+import dev.kellyson.projeto.PedeAi.API.product.dto.ProductResponseDTO;
+import dev.kellyson.projeto.PedeAi.API.product.mapper.ProductMapper;
+import dev.kellyson.projeto.PedeAi.API.product.repository.ProductRepository;
 import dev.kellyson.projeto.PedeAi.API.restaurant.dto.MyRestaurantResponseDTO;
 import dev.kellyson.projeto.PedeAi.API.restaurant.dto.RegisterRestaurantResponseDTO;
 import dev.kellyson.projeto.PedeAi.API.restaurant.dto.RestaurantRequestDTO;
@@ -12,6 +15,7 @@ import dev.kellyson.projeto.PedeAi.API.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -20,7 +24,9 @@ import java.util.List;
 public class RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
+    private final ProductRepository productRepository;
 
+    @Transactional
     public RegisterRestaurantResponseDTO registerRestaurant(RestaurantRequestDTO restaurantRequestDTO, Authentication authentication) {
         if (restaurantRepository.existsByName(restaurantRequestDTO.name())) {
             throw new ConflictException("Esse nome de restaurante ja está em uso");
@@ -39,6 +45,7 @@ public class RestaurantService {
         return RestaurantMapper.toRegisterResponse(restaurant);
     }
 
+    @Transactional(readOnly = true)
     public List<MyRestaurantResponseDTO> myRestaurants(Authentication authentication) {
         User owner = (User) authentication.getPrincipal();
 
@@ -47,6 +54,7 @@ public class RestaurantService {
                 .toList();
     }
 
+    @Transactional
     public String closeRestaurant(Long restaurantId,Authentication authentication) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new RestaurantNotFoundException("Esse restaurante nao existe"));
@@ -62,5 +70,16 @@ public class RestaurantService {
         }
 
         return "Seu restaurante foi fechado";
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProductResponseDTO> showMenu(Long restaurantId) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new RestaurantNotFoundException("Esse restaurante nao existe"));
+
+        return productRepository.findByRestaurantAndIsAvailableTrue(restaurant)
+                .stream()
+                .map(product -> ProductMapper.toResponse(product))
+                .toList();
     }
 }
