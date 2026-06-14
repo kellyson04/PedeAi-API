@@ -36,10 +36,17 @@ public class RestaurantController {
     }
 
     @PatchMapping("/{restaurantId}/close")
-    public ResponseEntity<String> closeMyRestaurant(@PathVariable Long restaurantId,Authentication authentication) {
+    public ResponseEntity<Void> closeMyRestaurant(@PathVariable Long restaurantId,Authentication authentication) {
         restaurantService.closeRestaurant(restaurantId,authentication);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{restaurantId}/open")
+    public ResponseEntity<Void> openMyRestaurant(@PathVariable Long restaurantId,Authentication authentication) {
+        restaurantService.openRestaurant(restaurantId,authentication);
+
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{restaurantId}/menu")
