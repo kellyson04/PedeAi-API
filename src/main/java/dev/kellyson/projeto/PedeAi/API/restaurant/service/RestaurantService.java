@@ -1,6 +1,7 @@
 package dev.kellyson.projeto.PedeAi.API.restaurant.service;
 
 import dev.kellyson.projeto.PedeAi.API.exception.ConflictException;
+import dev.kellyson.projeto.PedeAi.API.exception.BadRequestException;
 import dev.kellyson.projeto.PedeAi.API.exception.RestaurantNotFoundException;
 import dev.kellyson.projeto.PedeAi.API.product.dto.ProductResponseDTO;
 import dev.kellyson.projeto.PedeAi.API.product.mapper.ProductMapper;
@@ -55,7 +56,7 @@ public class RestaurantService {
     }
 
     @Transactional
-    public String closeRestaurant(Long restaurantId,Authentication authentication) {
+    public void closeRestaurant(Long restaurantId,Authentication authentication) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new RestaurantNotFoundException("Esse restaurante nao existe"));
 
@@ -64,12 +65,34 @@ public class RestaurantService {
         List<Restaurant> restaurants = restaurantRepository.findByOwner(owner);
 
         if (restaurants.contains(restaurant)) {
+            if (!restaurant.getIsOpen()) {
+                throw new BadRequestException("Esse restaurante ja esta fechado");
+            }
+
             restaurant.setIsOpen(false);
 
             restaurantRepository.save(restaurant);
         }
+    }
 
-        return "Seu restaurante foi fechado";
+    @Transactional
+    public void openRestaurant(Long restaurantId,Authentication authentication) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new RestaurantNotFoundException("Esse restaurante nao existe"));
+
+        User owner = (User) authentication.getPrincipal();
+
+        List<Restaurant> restaurants = restaurantRepository.findByOwner(owner);
+
+        if (restaurants.contains(restaurant)) {
+            if (restaurant.getIsOpen()) {
+                throw new BadRequestException("Esse restaurante ja esta aberto");
+            }
+
+            restaurant.setIsOpen(true);
+
+            restaurantRepository.save(restaurant);
+        }
     }
 
     @Transactional(readOnly = true)
