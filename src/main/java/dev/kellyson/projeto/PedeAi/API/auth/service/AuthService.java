@@ -23,6 +23,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -69,6 +71,7 @@ public class AuthService {
         return UserMapper.toResponse(user);
     }
 
+    @Transactional
     public String login(LoginRequestDTO loginRequestDTO) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(loginRequestDTO.email(),loginRequestDTO.password());
@@ -103,7 +106,7 @@ public class AuthService {
                     throw new BadRequestException("credenciais invalidas.");
                 }
 
-                user.setLockedUntil(java.time.LocalDateTime.now().plusMinutes(LOCK_TIME_MINUTES));
+                user.setLockedUntil(LocalDateTime.now().plusMinutes(LOCK_TIME_MINUTES));
                 userRepository.save(user);
 
                 throw new BadRequestException
