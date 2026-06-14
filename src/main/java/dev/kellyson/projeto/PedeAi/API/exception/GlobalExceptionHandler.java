@@ -34,7 +34,8 @@ public class GlobalExceptionHandler {
             RestaurantNotFoundException.class,
             CategoryNotFoundException.class,
             ZipCodeNotFoundException.class,
-            AddressNotFoundException.class
+            AddressNotFoundException.class,
+            ProductNotFoundException.class
     })
     public ResponseEntity<ErrorResponse> handleNotFound(RuntimeException e) {
         ErrorResponse error = ErrorResponse.builder()
