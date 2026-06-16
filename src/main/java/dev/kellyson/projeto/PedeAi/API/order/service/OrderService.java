@@ -43,7 +43,9 @@ public class OrderService {
     public OrderResponseDTO createOrder(CreateOrderRequestDTO request, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
 
-        Cart cart = redisTemplate.opsForValue().get("cart:user:" + user.getId());
+        String cartKey = "cart:user:" + user.getId();
+
+        Cart cart = redisTemplate.opsForValue().get(cartKey);
 
         if (cart == null || cart.getItems().isEmpty()) {
             throw new BadRequestException("Seu Carrinho esta vazio");
@@ -80,6 +82,8 @@ public class OrderService {
 
         orderRepository.save(order);
         orderItemRepository.saveAll(items);
+
+        redisTemplate.delete(cartKey);
 
         return OrderMapper.toResponse(order);
     }
