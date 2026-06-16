@@ -100,4 +100,18 @@ public class CartService {
 
         return cart;
     }
+
+    public void cleanCart(Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+
+        String cartKey = "cart:user:" + user.getId();
+
+        Cart cart = redisTemplate.opsForValue().get(cartKey);
+
+        if (cart == null || cart.getItems() == null || cart.getItems().isEmpty()) {
+            throw new BadRequestException("Carrinho vazio");
+        }
+
+        redisTemplate.delete(cartKey);
+    }
 }

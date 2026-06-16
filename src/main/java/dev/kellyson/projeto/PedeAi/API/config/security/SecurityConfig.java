@@ -39,6 +39,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/addresses/me").authenticated()
                         .requestMatchers(HttpMethod.POST, "/addresses").authenticated()
                         .requestMatchers(HttpMethod.POST, "/cart/items").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/cart").authenticated()
                         .requestMatchers(HttpMethod.POST, "/orders").authenticated()
                         .anyRequest().authenticated()
                 ).addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
