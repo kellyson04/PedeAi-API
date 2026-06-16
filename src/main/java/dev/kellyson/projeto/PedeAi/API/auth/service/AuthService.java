@@ -71,7 +71,7 @@ public class AuthService {
         return UserMapper.toResponse(user);
     }
 
-    @Transactional
+    @Transactional(noRollbackFor = BadRequestException.class)
     public String login(LoginRequestDTO loginRequestDTO) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(loginRequestDTO.email(),loginRequestDTO.password());
